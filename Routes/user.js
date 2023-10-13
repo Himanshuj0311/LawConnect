@@ -18,6 +18,25 @@ function isValidEmail(email) {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return emailPattern.test(email);
   }
+  function validatePassword(password) {
+    // Define regex patterns for password criteria
+    const minLengthRegex = /.{8,}/;
+    const uppercaseRegex = /[A-Z]/;
+    const lowercaseRegex = /[a-z]/;
+    const digitRegex = /\d/;
+    const specialCharacterRegex = /[!@#$%^&*()_+[\]{};:<>?,.\\/-]/;
+
+    // Check if the password meets all criteria
+    const isStrongPassword = (
+        minLengthRegex.test(password) &&
+        uppercaseRegex.test(password) &&
+        lowercaseRegex.test(password) &&
+        digitRegex.test(password) &&
+        specialCharacterRegex.test(password)
+    );
+
+    return isStrongPassword;                 
+}
 
 userrouter.post("/res",async(req,res)=>{
     try {
@@ -29,6 +48,7 @@ userrouter.post("/res",async(req,res)=>{
         return res.status(401).send("user  found");
       }
       if(!isValidEmail(email)) return res.status(401).send("Email is not correct")
+      if(!validatePassword(password)) return res.status(401).send(" Password should be Like this `Himan@0311`")
       const hash_Password=await bcrypt.hash(password,10);
        // const Confirm_Password_hash=await bcrypt.hash(conform_Password,10);
         const user=new UserModel({name,email,password:hash_Password,mobileno,isVerified,role,token});
